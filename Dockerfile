@@ -1,8 +1,7 @@
 FROM ubuntu:latest
 
-RUN apt update
-RUN apt -y full-upgrade
-RUN apt -y install wget unzip
+RUN apt update && apt -y full-upgrade
+RUN apt -y install wget unzip adduser
 
 RUN adduser steam
 
