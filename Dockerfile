@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 RUN apt update
 RUN apt -y full-upgrade
-RUN apt -y install wget unzip lib32gcc1 lib32stdc++6 screen
+RUN apt -y install wget unzip
 
 RUN adduser steam
 
