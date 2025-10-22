@@ -1,19 +1,18 @@
-# Base image
 FROM ubuntu:22.04
 
 # Install dependencies
-RUN dpkg --add-architecture i386 && \
-    apt update && apt -y install wget unzip screen lib32gcc-s1 lib32stdc++6 lib32z1 lib32ncurses6 ca-certificates curl && \
+RUN apt update && apt -y install wget unzip adduser screen lib32gcc1 lib32stdc++6 lib32z1 lib32ncurses6 ca-certificates curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN adduser --disabled-password --gecos "" steam
+# Create steam user
+RUN adduser --disabled-login --gecos "" steam
 
-# Set up directories
-RUN mkdir -p /home/steam/steamcmd /home/steam/mesa /home/steam/mesa/bms
+# Create directories
+RUN mkdir -p /home/steam/steamcmd /home/steam/mesa/bms/cfg
 
-# Download and install SteamCMD
 WORKDIR /home/steam/steamcmd
+
+# Download SteamCMD
 RUN wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz && \
     tar -xvzf steamcmd_linux.tar.gz && \
     chmod +x steamcmd.sh
@@ -22,15 +21,11 @@ RUN wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz && \
 USER steam
 WORKDIR /home/steam/mesa
 
-# Download start.sh and server.cfg directly from GitHub
-RUN curl -L -o /home/steam/start.sh https://raw.githubusercontent.com/michaelmullanyza-1/black-mesa-docker-with-sourcemod-coop/main/start.sh && \
-    chmod +x /home/steam/start.sh
+# Add server start script and default server.cfg
+ADD start.sh /home/steam/start.sh
+ADD server.cfg /home/steam/mesa/bms/cfg/server.cfg
+RUN chmod +x /home/steam/start.sh
 
-RUN curl -L -o /home/steam/server.cfg https://raw.githubusercontent.com/michaelmullanyza-1/black-mesa-docker-with-sourcemod-coop/main/server.cfg
+EXPOSE 27315-27330/udp 27315-27330/tcp
 
-# Expose ports
-EXPOSE 27315-27330/udp
-EXPOSE 27315-27330/tcp
-
-# Default command starts the helper script
 CMD ["/home/steam/start.sh"]
