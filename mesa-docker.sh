@@ -1,1 +1,1 @@
-docker container run -itd --name mesa-server -p 27015-27030:27015-27030/udp -p 27015-27030:27015-27030/tcp aabusheikh/black-mesa-docker
+docker container run -itd --name mesa-server -p 27315-27330:27315-27330/udp -p 27315-27330:27315-27330/tcp aabusheikh/black-mesa-docker
