@@ -22,10 +22,13 @@ RUN wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz && \
 USER steam
 WORKDIR /home/steam/mesa
 
-# Add start script (this will also download game/mods)
-ADD start.sh /home/steam/start.sh
-RUN chmod +x /home/steam/start.sh
+# Download start.sh and server.cfg directly from GitHub
+RUN curl -L -o /home/steam/start.sh https://raw.githubusercontent.com/michaelmullanyza-1/black-mesa-docker-with-sourcemod-coop/main/start.sh && \
+    chmod +x /home/steam/start.sh
 
+RUN curl -L -o /home/steam/server.cfg https://raw.githubusercontent.com/michaelmullanyza-1/black-mesa-docker-with-sourcemod-coop/main/server.cfg
+
+# Expose ports
 EXPOSE 27315-27330/udp
 EXPOSE 27315-27330/tcp
 
