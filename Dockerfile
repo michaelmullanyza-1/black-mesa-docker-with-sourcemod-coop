@@ -1,7 +1,7 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 RUN apt update && apt -y full-upgrade && \
-    apt -y install wget unzip adduser screen lib32gcc1 lib32stdc++6 lib32z1 lib32ncurses6 ca-certificates curl && \
+    apt -y install wget unzip adduser screen ca-certificates curl && \
     rm -rf /var/lib/apt/lists/*
 
 RUN adduser steam
