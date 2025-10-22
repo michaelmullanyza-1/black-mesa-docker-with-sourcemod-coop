@@ -6,14 +6,13 @@ RUN apt update && apt -y full-upgrade && \
 
 RUN adduser steam
 
-RUN mkdir -p /home/steam/steamcmd /home/steam/mesa /home/steam/mesa/bms && \
-    chmod +x /home/steam/steamcmd/steamcmd.sh
+RUN mkdir -p /home/steam/steamcmd /home/steam/mesa /home/steam/mesa/bms
 
 WORKDIR /home/steam/steamcmd
 
 RUN wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz \
     && tar -xvzf steamcmd_linux.tar.gz
-    
+
 RUN chmod +x steamcmd.sh
 RUN ./steamcmd.sh +force_install_dir /home/steam/mesa +login anonymous +app_update 346680 +quit
 
