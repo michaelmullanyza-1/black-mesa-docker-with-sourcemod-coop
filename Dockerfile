@@ -1,21 +1,23 @@
 FROM ubuntu:latest
 
-RUN apt update && apt -y full-upgrade
-RUN apt -y install wget unzip adduser
+RUN apt update && apt -y full-upgrade && \
+    apt -y install wget unzip adduser screen lib32gcc1 lib32stdc++6 lib32z1 lib32ncurses6 ca-certificates curl && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN adduser steam
 
-USER steam
-
-RUN mkdir -p /home/steam/steamcmd \
-    && mkdir -p /home/steam/mesa
+RUN mkdir -p /home/steam/steamcmd /home/steam/mesa /home/steam/mesa/bms && \
+    chmod +x /home/steam/steamcmd/steamcmd.sh
 
 WORKDIR /home/steam/steamcmd
 
 RUN wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz \
     && tar -xvzf steamcmd_linux.tar.gz
-
+    
+RUN chmod +x steamcmd.sh
 RUN ./steamcmd.sh +force_install_dir /home/steam/mesa +login anonymous +app_update 346680 +quit
+
+USER steam
 
 RUN mkdir -p /home/steam/.steam \
     && mkdir -p /home/steam/.steam/sdk32 \
@@ -30,10 +32,16 @@ RUN wget https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1156-linux.t
     && wget https://github.com/ampreeT/SourceCoop/releases/download/v1.5-beta2/SourceCoop-1.5-beta2-bms.zip \
     && unzip SourceCoop-1.5-beta2-bms.zip -d /home/steam/mesa/bms
 
+RUN rm -f steamcmd_linux.tar.gz \
+          mmsource-1.12.0-git1156-linux.tar.gz \
+          sourcemod-1.12.0-git7163-linux.tar.gz \
+          SourceCoop-1.5-beta2-bms.zip
+
 WORKDIR /home/steam/
 
 ADD start.sh /home/steam/start.sh
 ADD server.cfg /home/steam/server.cfg
+RUN chmod +x /home/steam/start.sh
 RUN mv /home/steam/mesa/bms/cfg/server.cfg /home/steam/mesa/bms/cfg/server.cfg.bck \
     && mv /home/steam/server.cfg /home/steam/mesa/bms/cfg/server.cfg
 
@@ -41,4 +49,5 @@ EXPOSE 27315-27330/udp
 EXPOSE 27315-27330/tcp
 #ENTRYPOINT ["bash"]
 WORKDIR /home/steam/mesa/
+USER steam
 CMD ["/home/steam/start.sh"]
