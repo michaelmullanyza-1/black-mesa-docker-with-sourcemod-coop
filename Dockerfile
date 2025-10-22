@@ -24,14 +24,12 @@ RUN mkdir -p /home/steam/.steam \
 
 WORKDIR /home/steam/mesa
 
-RUN wget https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1143-linux.tar.gz \
-    && tar -xvzf mmsource-1.11.0-git1143-linux.tar.gz -C /home/steam/mesa/bms \
-    && wget https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6645-linux.tar.gz \
-    && tar -xvzf sourcemod-1.11.0-git6645-linux.tar.gz -C /home/steam/mesa/bms \
-    && wget https://github.com/peace-maker/DHooks2/releases/download/v2.2.0-detours15/dhooks-2.2.0-detours15-sm110.zip \
-    && unzip dhooks-2.2.0-detours15-sm110.zip -d /home/steam/mesa/bms \
-    && wget https://github.com/ampreeT/SourceCoop/releases/download/v1.0.4/sourcecoop-1.0.4.zip \
-    && unzip sourcecoop-1.0.4.zip -d /home/steam/mesa/bms
+RUN wget https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1156-linux.tar.gz \
+    && tar -xvzf mmsource-1.12.0-git1156-linux.tar.gz -C /home/steam/mesa/bms \
+    && wget https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7163-linux.tar.gz \
+    && tar -xvzf sourcemod-1.12.0-git7163-linux.tar.gz -C /home/steam/mesa/bms \
+    && wget https://github.com/ampreeT/SourceCoop/releases/download/v1.5-beta2/SourceCoop-1.5-beta2-bms.zip \
+    && unzip SourceCoop-1.5-beta2-bms.zip -d /home/steam/mesa/bms
 
 WORKDIR /home/steam/
 
@@ -40,8 +38,8 @@ ADD server.cfg /home/steam/server.cfg
 RUN mv /home/steam/mesa/bms/cfg/server.cfg /home/steam/mesa/bms/cfg/server.cfg.bck \
     && mv /home/steam/server.cfg /home/steam/mesa/bms/cfg/server.cfg
 
-EXPOSE 27015-27030/udp
-EXPOSE 27015-27030/tcp
+EXPOSE 27315-27330/udp
+EXPOSE 27315-27330/tcp
 #ENTRYPOINT ["bash"]
 WORKDIR /home/steam/mesa/
 CMD ["/home/steam/start.sh"]
