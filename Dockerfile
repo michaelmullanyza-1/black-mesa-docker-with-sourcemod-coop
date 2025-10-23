@@ -1,43 +1,62 @@
-# Base image
+# -------------------------------
+# Black Mesa Dedicated Server (SteamCMD) - Lightweight Build
+# -------------------------------
+
 FROM ubuntu:22.04
 
-# Avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
-ENV STEAMCMDDIR=/home/steam/steamcmd
-ENV MESADIR=/home/steam/mesa
+LABEL maintainer="Michael Mullany <github.com/michaelmullanyza-1>"
+LABEL description="Lightweight Black Mesa server base with SteamCMD"
 
+# -------------------------------
 # Install dependencies
+# -------------------------------
 RUN apt-get update && \
-    apt-get -y upgrade && \
-    apt-get -y install wget unzip adduser screen lib32gcc-s1 lib32stdc++6 lib32z1 lib32ncurses6 ca-certificates curl && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    wget \
+    curl \
+    unzip \
+    tar \
+    screen \
+    lib32gcc-s1 \
+    lib32stdc++6 \
+    lib32z1 \
+    lib32ncurses6 \
+    ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Create steam user
-RUN adduser --disabled-password --gecos "" steam
+# -------------------------------
+# Create steam user and dirs
+# -------------------------------
+RUN useradd -m steam && \
+    mkdir -p /home/steam/steamcmd /home/steam/mesa && \
+    chown -R steam:steam /home/steam
 
-# Create directories
-RUN mkdir -p $STEAMCMDDIR $MESADIR/bms
-
-# Switch to steam user
 USER steam
-WORKDIR $STEAMCMDDIR
+WORKDIR /home/steam/steamcmd
 
-# Download SteamCMD
-RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz && \
-    tar -xvzf steamcmd_linux.tar.gz && \
-    rm steamcmd_linux.tar.gz
+# -------------------------------
+# Download SteamCMD (with retry)
+# -------------------------------
+RUN bash -c "\
+  for i in {1..5}; do \
+    echo 'Downloading SteamCMD (attempt '$i')...' && \
+    curl -fSL https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -o steamcmd_linux.tar.gz && break || sleep 5; \
+  done && \
+  tar -xvzf steamcmd_linux.tar.gz && \
+  rm steamcmd_linux.tar.gz"
 
-# Expose ports for Black Mesa
-EXPOSE 27315-27330/udp
-EXPOSE 27315-27330/tcp
-
-# Switch to home directory
+# -------------------------------
+# Copy startup files
+# -------------------------------
 WORKDIR /home/steam
+COPY --chown=steam:steam start.sh server.cfg ./
+RUN chmod +x start.sh
 
-# Add start script and server.cfg (your repo must have these)
-ADD start.sh /home/steam/start.sh
-ADD server.cfg /home/steam/server.cfg
-RUN chmod +x /home/steam/start.sh
+# -------------------------------
+# Expose Black Mesa ports
+# -------------------------------
+EXPOSE 27015-27030/udp
+EXPOSE 27015-27030/tcp
 
-# Set entrypoint
+WORKDIR /home/steam/mesa
 CMD ["/home/steam/start.sh"]
