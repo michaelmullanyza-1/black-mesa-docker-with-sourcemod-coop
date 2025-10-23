@@ -55,8 +55,8 @@ RUN chmod +x start.sh
 # -------------------------------
 # Expose Black Mesa ports
 # -------------------------------
-EXPOSE 27315-27330/udp
-EXPOSE 27315-27330/tcp
+EXPOSE 27315-27316/udp
+EXPOSE 27315-27316/tcp
 
 WORKDIR /home/steam/mesa
 CMD ["/home/steam/start.sh"]
