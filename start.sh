@@ -46,4 +46,4 @@ echo "=== Starting Black Mesa Dedicated Server ==="
 cd "$SERVER_DIR"
 
 # Run the server
-./srcds_run -game bms -secure -port 27015 +clientport 27016 +maxplayers 8 +map bm_c0a0a +exec server.cfg
+./srcds_run -game bms -secure -port 27315 +clientport 27316 +maxplayers 8 +map bm_c0a0a +exec server.cfg
