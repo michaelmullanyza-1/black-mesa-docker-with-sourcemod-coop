@@ -9,14 +9,11 @@ echo "=== Updating Black Mesa Dedicated Server ==="
 $STEAMCMD +force_install_dir "$SERVER_DIR" +login anonymous +app_update $BMS_APP_ID validate +quit
 
 cd "$SERVER_DIR"
-#sudo chown -R steam:steam "$SERVER_DIR"
-chown -R $(whoami):$(whoami) "$SERVER_DIR"
 
 # Ensure folder structure
 mkdir -p "$SERVER_DIR/bms/cfg"
 
-echo "=== Installing Mods (if missing) ==="
-
+# Install mods if missing (as before)
 # MetaMod
 if [ ! -d "$SERVER_DIR/bms/addons/metamod" ]; then
   echo "Installing MetaMod..."
@@ -43,18 +40,6 @@ fi
 
 # Copy server config
 cp /home/steam/server.cfg "$SERVER_DIR/bms/cfg/server.cfg"
-
-# Inject SERVER_NAME into server.cfg if provided
-if [ -n "$SERVER_NAME" ]; then
-  echo "Setting server name to: $SERVER_NAME"
-  # Ensure cfg directory exists
-  mkdir -p "$SERVER_DIR/bms/cfg"
-  # If server.cfg doesn't exist, create it
-  touch "$SERVER_DIR/bms/cfg/server.cfg"
-  # Remove any existing hostname line and append the new one
-  sed -i '/^hostname/d' "$SERVER_DIR/bms/cfg/server.cfg"
-  echo "hostname \"$SERVER_NAME\"" >> "$SERVER_DIR/bms/cfg/server.cfg"
-fi
 
 echo "=== Starting Black Mesa Dedicated Server ==="
 cd "$SERVER_DIR"
