@@ -1,145 +1,173 @@
-# Black Mesa Dedicated Server Docker with SourceMod & SourceCoop
+# 🧪 Black Mesa Dedicated Server (Docker + SourceMod + SourceCoop)
 
-![Black Mesa](https://upload.wikimedia.org/wikipedia/en/f/f0/Black_Mesa_cover.jpg)
-
-A Dockerized **Black Mesa dedicated server** with **SourceMod** and **SourceCoop** support, updated to use Ubuntu 22.04 and compatible 32-bit libraries.  
-Easily deployable via **Docker** or **Portainer**.
+This project provides a **lightweight Dockerized Black Mesa dedicated server** with **SourceMod** and **SourceCoop** support.  
+It automatically installs SteamCMD, the Black Mesa server, and required mods inside the container — all you need is Docker.
 
 ---
 
-## Features
+## 🚀 Features
 
-- Ubuntu 22.04 LTS base for stable 32-bit support
-- Automatic **SteamCMD** installation of Black Mesa (AppID: 346680)
-- Includes **MetaMod:Source 1.12**, **SourceMod 1.12**, and **SourceCoop 1.5-beta2**
-- Custom `start.sh` with configurable ports
-- Configurable server via `server.cfg`
-- Runs as non-root `steam` user for security
-- Fully persistent game data via Docker volumes
-
----
-
-## Requirements
-
-- Docker 20+
-- Docker Compose 1.29+ (for stack deployments)
-- Portainer (optional, for GUI deployment)
+- 🐳 **Docker-based** — clean, portable, and isolated server setup  
+- 🕹️ **SteamCMD auto-installs** Black Mesa dedicated server  
+- 🔧 **Automatic mod setup** — installs MetaMod, SourceMod, and SourceCoop  
+- 💾 **Persistent data volume** — keeps maps, configs, and mods between rebuilds  
+- ⚙️ **Configurable startup** via `server.cfg`  
+- 📦 **Simple deployment** via `docker compose`
 
 ---
 
-## Quick Start (Docker CLI)
+## 📁 Project Structure
 
-1. Clone this repository:
+```
+black-mesa-docker/
+│
+├── Dockerfile          # Builds the lightweight Ubuntu + SteamCMD base
+├── docker-compose.yml  # Defines container, ports, and volumes
+├── start.sh            # Runtime script that installs & launches the server
+├── server.cfg          # Your server configuration
+└── data/               # Created automatically for persistent game data
+```
 
+---
+
+## 🧰 Prerequisites
+
+- Docker Engine 24+  
+- Docker Compose 2.0+  
+- At least **20 GB of free disk space** (first build downloads all server files)  
+
+---
+
+## ⚙️ Setup
+
+### 1️⃣ Clone this repository
 ```bash
 git clone https://github.com/michaelmullanyza-1/black-mesa-docker-with-sourcemod-coop.git
 cd black-mesa-docker-with-sourcemod-coop
 ```
 
-2. Build the Docker image:
-
+### 2️⃣ Build and start the container
 ```bash
-docker build -t blackmesa:latest .
+docker compose build
+docker compose up -d
 ```
 
-3. Run the container:
+The first launch will:
+- Install SteamCMD  
+- Download and validate Black Mesa server  
+- Install MetaMod, SourceMod, and SourceCoop  
+- Launch the game server automatically  
 
-```bash
-docker run -itd \
-  --name mesa-server \
-  -p 27315-27330:27315-27330/udp \
-  -p 27315-27330:27315-27330/tcp \
-  -v blackmesa-data:/home/steam/mesa \
-  blackmesa:latest
+---
+
+## 🧩 Configuration
+
+### 🔧 `server.cfg`
+You can edit `server.cfg` in the root directory before or after running the server.  
+It’s automatically copied into the container at startup.
+
+Example:
+```cfg
+hostname "Black Mesa Co-op Server"
+rcon_password "changeme"
+sv_lan 0
+sv_pure 0
+mp_teamplay 1
+mp_friendlyfire 0
+sv_maxrate 0
+sv_minrate 30000
+sv_maxupdaterate 100
+sv_minupdaterate 30
 ```
 
 ---
 
-## Quick Start (Portainer)
+## 🔌 Networking
 
-1. Open Portainer → **Stacks** → **Add stack**
-2. Name the stack (e.g., `black-mesa-server`)
-3. Paste this `docker-compose.yml`:
+| Port Range | Protocol | Purpose                  |
+|-------------|-----------|--------------------------|
+| 27315–27330 | TCP/UDP   | Game, RCON, and client communication |
 
-```yaml
-version: "3.8"
-services:
-  blackmesa:
-    build:
-      context: https://github.com/michaelmullanyza-1/black-mesa-docker-with-sourcemod-coop.git
-    container_name: black-mesa-server
-    ports:
-      - "27315-27330:27315-27330/udp"
-      - "27315-27330:27315-27330/tcp"
-    volumes:
-      - blackmesa-data:/home/steam/mesa
-    restart: unless-stopped
-
-volumes:
-  blackmesa-data:
-```
-
-4. Deploy the stack — Portainer will **build the image from GitHub** and start the server.
+Make sure to open/forward these ports on your router or firewall if you want public players to connect.
 
 ---
 
-## Configuration
+## 💾 Persistent Data
 
-- **Ports:** `27315-27330` TCP/UDP (adjust in `start.sh` and docker run/compose if needed)
-- **Server config:** `server.cfg` located in `/home/steam/mesa/bms/cfg/`
-- **Start script:** `start.sh` located in `/home/steam/`  
+All game data, mods, and configs are stored in the `./data` folder on your host machine.
 
-Example `start.sh`:
+This means you can:
+- Rebuild or update the image freely  
+- Keep your maps, plugins, and configs intact  
 
+---
+
+## 🧠 Useful Commands
+
+| Action | Command |
+|--------|----------|
+| View logs | `docker logs -f blackmesa_server` |
+| Stop server | `docker compose down` |
+| Restart server | `docker compose restart` |
+| Enter container shell | `docker exec -it blackmesa_server bash` |
+| Update Black Mesa manually | `docker exec -it blackmesa_server /home/steam/start.sh` |
+
+---
+
+## 🧩 Mod Management
+
+The container automatically downloads and installs:
+- **MetaMod:** Core mod loader  
+- **SourceMod:** Plugin framework  
+- **SourceCoop:** Cooperative multiplayer mod for Black Mesa  
+
+They’re stored inside `data/bms/addons/`.
+
+---
+
+## ⚡ Tips
+
+- The first build can take several minutes (SteamCMD + mods).  
+- After that, container restarts are near-instant.  
+- Adjust CPU/memory limits in `docker-compose.yml` if needed.
+
+---
+
+## 🧰 Troubleshooting
+
+### ❌ `exit code 100` during apt install
+This usually means a missing package source or outdated base image.  
+**Fix:** Rebuild with `--no-cache` to refresh all package sources.
 ```bash
-/home/steam/mesa/srcds_run -game bms -secure -port 27315 +clientport 27316 +maxplayers 10 +mp_teamplay 1 +exec server.cfg +map bm_c0a0a
+docker compose build --no-cache
 ```
 
-- **Volume:** `blackmesa-data` ensures game files and mods persist across container restarts
-
----
-
-## Updating Mods / Server
-
-1. Stop the container:
-
+### ❌ `exit code 3` when downloading steamcmd
+Steam’s CDN occasionally moves files.  
+**Fix:** Retry the build after a few minutes — or manually verify the link is reachable:
 ```bash
-docker stop mesa-server
+wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
 ```
 
-2. Rebuild the image (if updating SteamCMD or mods):
-
+### ❌ Missing `srcds_run` or game files
+If the container logs show `No such file or directory` for `/home/steam/mesa/srcds_run`, the SteamCMD download likely failed mid-way.  
+**Fix:** Rebuild cleanly and check your disk space.
 ```bash
-docker build -t blackmesa:latest .
+docker compose down -v
+docker compose build --no-cache
+docker compose up -d
 ```
 
-3. Restart the container:
-
+### ⚠️ Container keeps restarting
+This happens when the server crashes or an install loop runs endlessly.  
+**Fix:** Inspect logs with:
 ```bash
-docker start mesa-server
+docker logs -f blackmesa_server
 ```
 
 ---
 
-## Notes
+## 🧑‍💻 Maintainer
 
-- Runs **as non-root user** `steam` for security
-- Based on **Ubuntu 22.04 LTS** to ensure SteamCMD and 32-bit libraries work
-- Compatible with **Portainer** stack deployments
-
----
-
-## License
-
-This project is provided **as-is**, for educational and personal server hosting purposes.  
-Check the **[Steam EULA](https://store.steampowered.com/eula)** for hosting Black Mesa servers.
-
----
-
-## Acknowledgments
-
-- [Black Mesa](https://store.steampowered.com/app/362890/Black_Mesa/)  
-- [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD)  
-- [SourceMod](https://www.sourcemod.net/)  
-- [MetaMod:Source](https://www.sourcemm.net/)  
-- [SourceCoop](https://github.com/ampreeT/SourceCoop)
+**Michael Mullany**  
+[GitHub: michaelmullanyza-1](https://github.com/michaelmullanyza-1)
