@@ -44,6 +44,18 @@ fi
 # Copy server config
 cp /home/steam/server.cfg "$SERVER_DIR/bms/cfg/server.cfg"
 
+# Inject SERVER_NAME into server.cfg if provided
+if [ -n "$SERVER_NAME" ]; then
+  echo "Setting server name to: $SERVER_NAME"
+  # Ensure cfg directory exists
+  mkdir -p "$SERVER_DIR/bms/cfg"
+  # If server.cfg doesn't exist, create it
+  touch "$SERVER_DIR/bms/cfg/server.cfg"
+  # Remove any existing hostname line and append the new one
+  sed -i '/^hostname/d' "$SERVER_DIR/bms/cfg/server.cfg"
+  echo "hostname \"$SERVER_NAME\"" >> "$SERVER_DIR/bms/cfg/server.cfg"
+fi
+
 echo "=== Starting Black Mesa Dedicated Server ==="
 cd "$SERVER_DIR"
 
