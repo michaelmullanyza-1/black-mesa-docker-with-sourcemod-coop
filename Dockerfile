@@ -60,4 +60,5 @@ EXPOSE 27315-27316/udp
 EXPOSE 27315-27316/tcp
 
 WORKDIR /home/steam/mesa
+USER steam
 CMD ["/home/steam/start.sh"]
