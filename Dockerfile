@@ -30,6 +30,7 @@ RUN apt-get update && \
 RUN useradd -m steam && \
     mkdir -p /home/steam/steamcmd /home/steam/mesa && \
     chown -R steam:steam /home/steam
+RUN mkdir -p /home/steam/mesa/bms && chown -R steam:steam /home/steam/mesa
 
 USER steam
 WORKDIR /home/steam/steamcmd
