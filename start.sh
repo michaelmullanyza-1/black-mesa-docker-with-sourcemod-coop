@@ -9,6 +9,8 @@ echo "=== Updating Black Mesa Dedicated Server ==="
 $STEAMCMD +force_install_dir "$SERVER_DIR" +login anonymous +app_update $BMS_APP_ID validate +quit
 
 cd "$SERVER_DIR"
+sudo chown -R steam:steam "$SERVER_DIR"
+chown -R $(whoami):$(whoami) "$SERVER_DIR"
 
 # Ensure folder structure
 mkdir -p "$SERVER_DIR/bms/cfg"
