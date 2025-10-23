@@ -86,7 +86,7 @@ sv_minupdaterate 30
 
 | Port Range | Protocol | Purpose                  |
 |-------------|-----------|--------------------------|
-| 27315–27330 | TCP/UDP   | Game, RCON, and client communication |
+| 27315–27316 | TCP/UDP   | Game, RCON, and client communication |
 
 Make sure to open/forward these ports on your router or firewall if you want public players to connect.
 
